@@ -1,0 +1,48 @@
+{
+  "name": "svelte-form-helper",
+  "version": "0.0.1",
+  "type": "module",
+  "keywords": [
+    "svelte",
+    "form",
+    "forms",
+    "validation",
+    "valid",
+    "submit",
+    "state"
+  ],
+  "homepage": "https://captaincodeman.github.io/svelte-form-helper/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/captaincodeman/svelte-form-helper.git"
+  },
+  "author": {
+    "name": "Simon Green",
+    "email": "simon@captaincodeman.com",
+    "url": "https://www.captaincodeman.com/"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "package": "svelte-package",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/kit": "next",
+    "@sveltejs/package": "1.0.0-next.6",
+    "@tailwindcss/forms": "^0.5.2",
+    "autoprefixer": "^10.4.7",
+    "postcss": "^8.4.14",
+    "postcss-load-config": "^4.0.1",
+    "svelte": "^3.53.1",
+    "svelte-check": "^2.9.2",
+    "svelte-preprocess": "^4.10.7",
+    "tailwindcss": "^3.1.5",
+    "tslib": "^2.4.1",
+    "typescript": "^4.9.3",
+    "vite": "^3.2.4"
+  }
+}
