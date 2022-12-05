@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { createForm } from '$lib/form'
-	import Hint from '$lib/Hint.svelte'
-	import Validation from '$lib/Validation.svelte'
+	import { createForm, Hint, Validation } from '$lib'
 
 	async function isNameAvailable(value: string) {
 		await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500))
