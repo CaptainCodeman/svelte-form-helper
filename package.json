@@ -1,6 +1,6 @@
 {
   "name": "svelte-form-helper",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "keywords": [
     "svelte",
@@ -11,6 +11,14 @@
     "submit",
     "state"
   ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "homepage": "https://captaincodeman.github.io/svelte-form-helper/",
   "repository": {
     "type": "git",
@@ -23,16 +31,13 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "package": "svelte-package",
+    "build": "tsup",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
-    "@sveltejs/package": "1.0.0-next.6",
     "@tailwindcss/forms": "^0.5.2",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
@@ -42,6 +47,7 @@
     "svelte-preprocess": "^4.10.7",
     "tailwindcss": "^3.1.5",
     "tslib": "^2.4.1",
+    "tsup": "^6.5.0",
     "typescript": "^4.9.3",
     "vite": "^3.2.4"
   }
