@@ -76,8 +76,6 @@ export function createField(options?: FieldOptions): Field {
         // set validation flag and message
         if (message) {
           input.setCustomValidity(message)
-        } else {
-          input.setCustomValidity('')
         }
       }
 
@@ -123,6 +121,7 @@ export function createField(options?: FieldOptions): Field {
     }
 
     function onInput(e: Event) {
+      input.setCustomValidity('')
       checkValidity({ dirty: true })
     }
 
