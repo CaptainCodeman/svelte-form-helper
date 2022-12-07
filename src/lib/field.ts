@@ -59,7 +59,7 @@ export function createField(options?: FieldOptions): Field {
   const action = (input: HTMLInputElement) => {
     let globalNonce: Object
 
-    async function checkValidity(reason: { dirty?: boolean, touched?: boolean }) {
+    async function checkValidity(touched = false, dirty = false) {
       // used to ignore potentially still pending async custom validation checks
       const localNonce = globalNonce = new Object()
 
@@ -90,8 +90,9 @@ export function createField(options?: FieldOptions): Field {
       const { validity, validationMessage } = input
 
       update(x => {
-        const { dirty, touched } = { ...x, ...reason }
-        const show = (onDirty && dirty) || (onTouched && touched)
+        dirty = x.dirty || dirty,
+          touched = x.touched || touched
+        const show = touched && !validity.valid
         return {
           id,
           dirty,
@@ -113,31 +114,28 @@ export function createField(options?: FieldOptions): Field {
       })
     }
 
-    // initialize validity state
-    checkValidity({})
-
     function onBlur(e: Event) {
-      checkValidity({ touched: true })
+      if (onTouched) {
+        checkValidity(true, false)
+      }
     }
 
     function onInput(e: Event) {
       input.setCustomValidity('')
-      checkValidity({ dirty: true })
+      if (onDirty) {
+        checkValidity(true, true)
+      }
     }
 
-    async function onChange(e: Event) {
-      checkValidity({})
-    }
+    checkValidity()
 
     input.addEventListener('blur', onBlur)
     input.addEventListener('input', onInput)
-    input.addEventListener('change', onChange)
 
     return {
       destroy() {
         input.removeEventListener('blur', onBlur)
         input.removeEventListener('input', onInput)
-        input.removeEventListener('change', onChange)
       },
     }
   }

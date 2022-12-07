@@ -2,31 +2,17 @@
 
 Lightweight () helpers for form validation with Svelte
 
-1.92 KB minified, 857 bytes gzipped
+1.84 KB minified, 851 bytes gzipped (compression level 6)
 
 Alternative package name: `itsy-bitsy-teenie-weenie-svelte-form-validate-machiney`
 
 ## Goals
 
-Use standard form and input validation wherever possible for compatibility with no-JS / pending-JS
-
-Progressively enhance normal forms, but allow easier acces to validation state and more control over styling
-
-Mostly to set valid / invalid styles and decide which messages to show and when
-
-SSR compatible
-
-## Options
-
-Whether to re-evaluate validation on input (dirty), on touched (blur), or only for submit
-
-## State
-
-Whether each fields is dirty, touched, validating (to handle async), valid and if not, why not
-
-Form state is aggregation of all the fields (valid if _all_ fields are valid, dirty or touched if _any_ fields are)
-
-Form values will come from the form itself or by binding to variables, not our job ...
+- Small size
+- Use standard form and input validation wherever possible for compatibility with no-JS / pending-JS
+- Progressively enhance normal forms, but allow easier acces to validation state and more control over styling & messaging
+- Mostly to set valid / invalid styles and decide which messages to show and when
+- SSR compatible
 
 ## Usage
 
@@ -72,7 +58,7 @@ The field instance is also a store and provides access to the validation informa
 </div>
 ```
 
-The state includes whether the message should be show and the message itself. The minimal use will display the default browser message (this uses am `{#if}` block instead of using a `hidden` attribute):
+The state includes whether the field is valid and the message itself. The minimal use will display the default browser message (this uses am `{#if}` block instead of using a `hidden` attribute):
 
 ```svelte
 {#if $field.show}
@@ -104,7 +90,7 @@ The use of `{#if}` blocks helps keep the package size down and should be more ef
 
 ### Forms
 
-A form aggregates the state of the fields - pass the fields into the function when creating the form instance:
+A form aggregates the state of the fields - a form is valid if all the fields are valid _and_ have been touched (by default, the ). Pass the fields into the function when creating the form instance:
 
 ```ts
 const form = createForm(email, age, name, random)
