@@ -139,6 +139,7 @@ The simplest message display just needs to reference the field:
 ```svelte
 <script lang="ts" context="module">
   import type { FieldState } from 'svelte-form-helper/field'
+
   export const key = {}
   export type Context = {
     state: Readable<FieldState>
@@ -148,10 +149,13 @@ The simplest message display just needs to reference the field:
 
 <script lang="ts">
   import type { Readable } from 'svelte/store'
+
   import { setContext } from 'svelte'
   export { state as for }
+
   let state: Readable<FieldState>
   let clazz = $$props.class
+
   setContext<Context>(key, { state, clazz })
 </script>
 
@@ -177,6 +181,7 @@ For separate validation messages per reason, nest one or more `<Hint>` component
   import { key } from './Validation.svelte'
   import type { Context } from './Validation.svelte'
   import { getContext } from 'svelte'
+
   export let badInput = false
   export let customError = false
   export let patternMismatch = false
