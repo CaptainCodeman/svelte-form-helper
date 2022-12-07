@@ -35,7 +35,7 @@ const defaultFieldState = {
   tooLong: false,
   tooShort: false,
   typeMismatch: false,
-  valid: false,
+  valid: true,
   valueMissing: false,
 }
 
