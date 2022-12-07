@@ -90,8 +90,8 @@ export function createField(options?: FieldOptions): Field {
       const { validity, validationMessage } = input
 
       update(x => {
-        dirty = x.dirty || dirty,
-          touched = x.touched || touched
+        dirty = x.dirty || dirty
+        touched = x.touched || touched
         const show = touched && !validity.valid
         return {
           id,
