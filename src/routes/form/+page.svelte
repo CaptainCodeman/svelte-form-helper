@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createField, createForm } from '$lib'
+	import { createForm } from '$lib'
 
 	// is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
 	async function isNameAvailable(value: string) {
@@ -8,14 +8,12 @@
 		return valid ? null : `Name '${value}' not available`
 	}
 
-	const email = createField()
-	const age = createField()
-	const name = createField({ validator: isNameAvailable, onDirty: true })
-	const random = createField()
-	const radio = createField({ onDirty: true })
-
-	// TODO: try to remove the need to populate the form with the fields by keeping track as they are added to the DOM
-	const form = createForm(email, age, name, random, radio)
+	const form = createForm()
+	const email = form.field()
+	const age = form.field()
+	const name = form.field({ validator: isNameAvailable })
+	const random = form.field()
+	const radio = form.field()
 
 	function onSubmit() {
 		// whatever

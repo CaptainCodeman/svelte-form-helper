@@ -30,7 +30,7 @@ Create a field instance:
 const email = createField()
 ```
 
-Options can be passed to define a custom validation (which can be async, and should return a message if invalid or null if valied) and whether to perform validation on input (dirty) or when touched (blur). Validation doesn't run on initial render to prevent failed messages appearing before any user interaction.
+Options can be passed to define a custom validation (which can be async, and should return a message if invalid or null if valied) and whether to perform validation on input or not (`onDirty`, default true). Validation doesn't run on initial render to prevent failed messages appearing before any user interaction.
 
 ```ts
 // is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
@@ -40,10 +40,10 @@ async function isNameAvailable(value: string) {
 	return valid ? null : `Name '${value}' not available`
 }
 
-const name = createField({ validator: isNameAvailable, onDirty: true })
+const name = createField({ validator: isNameAvailable })
 ```
 
-The field instance is applies to an HTML Input Element as a `use:action` (it adds some WIA-ARIA handling):
+The field instance is applied to an HTML Input Element as a `use:action` (it adds some WIA-ARIA handling):
 
 ```svelte
 <input use:name type="text" placeholder="unique name" required />
@@ -94,6 +94,15 @@ A form aggregates the state of the fields - a form is valid if all the fields ar
 
 ```ts
 const form = createForm(email, age, name, random)
+```
+
+Or alternatively, create the form and use the `.field()` method on it to create each field. This avoids the potential issue of the form fields you create and use getting out of sync with the fields you pass to the form.
+
+```ts
+const form = createForm()
+
+const name = form.field({ validator: isNameAvailable })
+const email = form.field()
 ```
 
 Just like the fields, the form instance is applied to the HTML Form Element as a `use:action`

@@ -44,7 +44,7 @@ export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { 
 
 export function createField(options?: FieldOptions): Field {
   const id = newID()
-  const { onDirty, validator } = { onDirty: false, ...options }
+  const { onDirty, validator } = { onDirty: true, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
 
   const action = (input: HTMLInputElement) => {
