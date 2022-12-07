@@ -11,7 +11,7 @@
 	const age = createField()
 	const name = createField({ validator: isNameAvailable, onDirty: true })
 	const number = createField()
-	const radio = createField({ onDirty: true, onTouched: true })
+	const radio = createField({ onDirty: true })
 
 	let drone: string
 </script>

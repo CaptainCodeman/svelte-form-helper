@@ -12,7 +12,7 @@
 	const age = createField()
 	const name = createField({ validator: isNameAvailable, onDirty: true })
 	const random = createField()
-	const radio = createField({ onDirty: true, onTouched: true })
+	const radio = createField({ onDirty: true })
 
 	// TODO: try to remove the need to populate the form with the fields by keeping track as they are added to the DOM
 	const form = createForm(email, age, name, random, radio)

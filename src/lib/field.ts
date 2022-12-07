@@ -44,7 +44,6 @@ export type Validator = (value: string) => Promise<string | null>
 export interface FieldOptions {
   validator?: Validator
   onDirty?: boolean
-  onTouched?: boolean
 }
 
 // Field store & use:action
@@ -52,7 +51,7 @@ export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { 
 
 export function createField(options?: FieldOptions): Field {
   const id = newID('form-helper')
-  const { onDirty, onTouched, validator } = { onDirty: false, onTouched: true, ...options }
+  const { onDirty, validator } = { onDirty: false, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
   const readable = { subscribe }
 
@@ -115,9 +114,7 @@ export function createField(options?: FieldOptions): Field {
     }
 
     function onBlur(e: Event) {
-      if (onTouched) {
-        checkValidity(true, false)
-      }
+      checkValidity(true, false)
     }
 
     function onInput(e: Event) {
