@@ -30,19 +30,21 @@ Form values will come from the form itself or by binding to variables, not our j
 
 ## Usage
 
-import:
+First import the factory functions (you can use field validation without a form, for one-off inputs that don't need to be submitted):
 
 ```ts
 import { createField, createForm } from 'svelte-form-helper'
 ```
 
-create a field:
+### Fields
+
+Create a field instance:
 
 ```ts
 const email = createField()
 ```
 
-options for custom validation (can be async) and whether to validate on input (dirty) or touched (blur)
+Options can be passed to define a custom validation (which can be async, and should return a message if invalid or null if valied) and whether to perform validation on input (dirty) or when touched (blur). Validation doesn't run on initial render to prevent failed messages appearing before any user interaction.
 
 ```ts
 // is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
@@ -55,19 +57,22 @@ async function isNameAvailable(value: string) {
 const name = createField({ validator: isNameAvailable, onDirty: true })
 ```
 
-apply to an input as a `use:action` (it adds some WIA-ARIA handling) and access the state as a store:
+The field instance is applies to an HTML Input Element as a `use:action` (it adds some WIA-ARIA handling):
 
 ```svelte
-<input id="name" use:name type="text" placeholder="unique name" required />
+<input use:name type="text" placeholder="unique name" required />
+```
+
+The field instance is also a store and provides access to the validation information. Note the ID - this links the message to the input using the `aria-describedby` attribute:
+
+```svelte
 <div id={$name.id} class="m-1 text-xs text-red-700" hidden={!$name.show}>
   {#if $name.valueMissing}Name is required{/if}
   {#if $name.customError}Name not available{/if}
 </div>
 ```
 
-(this validation message handling could easily be wrapped into Message / Hint components)
-
-The state includes whether the message should be show and the message itself. The minimal use will display the default browser message:
+The state includes whether the message should be show and the message itself. The minimal use will display the default browser message (this uses am `{#if}` block instead of using a `hidden` attribute):
 
 ```svelte
 {#if $field.show}
@@ -78,7 +83,7 @@ The state includes whether the message should be show and the message itself. Th
 It also has `ValidityState` flags which are [build into the browser](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) and used to decide which message to show:
 
 ```svelte
-<input id="age" use:age type="number" required value="0" min="18" max="65" />
+<input use:age type="number" required value="0" min="18" max="65" />
 <div id={$age.id} class="m-1 text-xs text-red-700" hidden={!$age.show}>
   {#if $age.valueMissing}You have to tell us your age{/if}
   {#if $age.rangeUnderflow}You must be at least 18{/if}
@@ -87,22 +92,120 @@ It also has `ValidityState` flags which are [build into the browser](https://dev
 </div>
 ```
 
-a form can aggregate the state of the fields:
+The use of `{#if}` blocks helps keep the package size down and should be more efficient, but it's also possible to define some Svelte Components to make the outputting easier if preferred (see below for implementation):
+
+```svelte
+<input use:email type="email" placeholder="email address" required />
+<Validation for={email} class="m-1 text-xs text-red-700">
+  <Hint valueMissing>Email address is required</Hint>
+  <Hint typeMismatch>Not a valid email address</Hint>
+</Validation>
+```
+
+### Forms
+
+A form aggregates the state of the fields - pass the fields into the function when creating the form instance:
 
 ```ts
 const form = createForm(email, age, name, random)
 ```
 
-again applied to the form as a `use:action`
+Just like the fields, the form instance is applied to the HTML Form Element as a `use:action`
 
 ```svelte
 <form use:form on:submit|preventDefault={onSubmit}>
 ```
 
-and accessed as a store to enable / disable submit buttons:
+The stats is accessed as a store to enable / disable submit buttons:
 
 ```svelte
 <button type="submit" class="block my-3 text-white bg-green-800 py-2 px-4 rounded disabled:bg-gray-400" disabled={!$form.valid}>
   Submit
 </button>
+```
+
+## Example Validation Components
+
+The implementation for the validation component syntax shown earlier is below:
+
+### Validation.svelte
+
+The simplest message display just needs to reference the field:
+
+```svelte
+<Validation for={email} class="m-1 text-xs text-red-700" />
+```
+
+```svelte
+<script lang="ts" context="module">
+	import type { FieldState } from 'svelte-form-helper/field'
+	export const key = {}
+	export type Context = {
+		state: Readable<FieldState>
+		clazz: string
+	}
+</script>
+
+<script lang="ts">
+	import type { Readable } from 'svelte/store'
+	import { setContext } from 'svelte'
+	export { state as for }
+	let state: Readable<FieldState>
+	let clazz = $$props.class
+	setContext<Context>(key, { state, clazz })
+</script>
+
+{#if $state.show}
+	<slot><div id={$state.id} class={clazz}>{$state.message}</div></slot>
+{/if}
+```
+
+### Hint.svelte
+
+For separate validation messages per reason, nest one or more `<Hint>` components within a `<Validation>` component:
+
+```svelte
+<input use:email type="email" placeholder="email address" required />
+<Validation for={email} class="m-1 text-xs text-red-700">
+  <Hint valueMissing>Email address is required</Hint>
+  <Hint typeMismatch>Not a valid email address</Hint>
+</Validation>
+```
+
+```svelte
+<script lang="ts">
+	import { key } from './Validation.svelte'
+	import type { Context } from './Validation.svelte'
+	import { getContext } from 'svelte'
+	export let badInput = false
+	export let customError = false
+	export let patternMismatch = false
+	export let rangeOverflow = false
+	export let rangeUnderflow = false
+	export let stepMismatch = false
+	export let tooLong = false
+	export let tooShort = false
+	export let typeMismatch = false
+	export let valid = false
+	export let valueMissing = false
+
+	const { state, clazz } = getContext<Context>(key)
+
+	// prettier-ignore
+	$: show = ($state.badInput && badInput) ||
+						($state.customError && customError) ||
+						($state.patternMismatch && patternMismatch) ||
+						($state.rangeOverflow && rangeOverflow) ||
+						($state.rangeUnderflow && rangeUnderflow) ||
+						($state.stepMismatch && stepMismatch) ||
+						($state.tooLong && tooLong) ||
+						($state.tooShort && tooShort) ||
+						($state.typeMismatch && typeMismatch) ||
+						($state.valid && valid) ||
+						($state.valueMissing && valueMissing)
+</script>
+
+{#if show}
+	<div id={$state.id} class={clazz}><slot message={$state.message} /></div>
+{/if}
 ```
