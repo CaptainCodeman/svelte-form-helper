@@ -50,7 +50,7 @@ export interface FieldOptions {
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
 export function createField(options?: FieldOptions): Field {
-  const id = newID('form-helper')
+  const id = newID()
   const { onDirty, validator } = { onDirty: false, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
   const readable = { subscribe }
@@ -91,12 +91,11 @@ export function createField(options?: FieldOptions): Field {
       update(x => {
         dirty = x.dirty || dirty
         touched = x.touched || touched
-        const show = touched && !validity.valid
         return {
           id,
           dirty,
           touched,
-          show,
+          show: touched && !validity.valid,
           message: validationMessage,
           badInput: validity.badInput,
           customError: validity.customError,
@@ -141,7 +140,4 @@ export function createField(options?: FieldOptions): Field {
 }
 
 let id = 0
-
-export function newID(prefix: string) {
-  return `${prefix}:${++id}`
-}
+const newID = () => `form-help:${++id}`
