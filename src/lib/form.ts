@@ -47,7 +47,5 @@ export function createForm(...fields: Field[]): Form {
     }
   }
 
-  return Object.assign(action, {
-    subscribe,
-  })
+  return Object.assign(action, { subscribe })
 }

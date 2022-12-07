@@ -53,7 +53,6 @@ export function createField(options?: FieldOptions): Field {
   const id = newID()
   const { onDirty, validator } = { onDirty: false, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
-  const readable = { subscribe }
 
   const action = (input: HTMLInputElement) => {
     let globalNonce: Object
@@ -136,7 +135,7 @@ export function createField(options?: FieldOptions): Field {
     }
   }
 
-  return Object.assign(action, readable)
+  return Object.assign(action, { subscribe })
 }
 
 let id = 0
