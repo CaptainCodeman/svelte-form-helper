@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { createField, createForm } from '$lib'
 
+	// is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
 	async function isNameAvailable(value: string) {
 		await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500))
 		const valid = value.length > 5
@@ -10,14 +11,14 @@
 	const email = createField()
 	const age = createField()
 	const name = createField({ validator: isNameAvailable, onDirty: true })
-	const number = createField()
+	const random = createField()
 	const radio = createField({ onDirty: true, onTouched: true })
 
 	// TODO: try to remove the need to populate the form with the fields by keeping track as they are added to the DOM
-	const form = createForm(email, age, name, number, radio)
+	const form = createForm(email, age, name, random, radio)
 
 	function onSubmit() {
-		console.log('submit')
+		// whatever
 	}
 
 	let drone: string
@@ -48,8 +49,8 @@
 	</div>
 
 	<label for="random" class="mt-2 text-sm text-gray-500">Pick a number from, 1 to 10</label>
-	<input id="random" use:number type="number" required value="0" min="1" max="10" />
-	<div id={$number.id} class="m-1 text-xs text-red-700" hidden={!$number.show}>{$number.message}</div>
+	<input id="random" use:random type="number" required value="0" min="1" max="10" />
+	<div id={$random.id} class="m-1 text-xs text-red-700" hidden={!$random.show}>{$random.message}</div>
 
 	<fieldset>
 		<legend>Select a maintenance drone:</legend>
@@ -79,20 +80,12 @@ form:   {JSON.stringify($form, null, 2)}
 name:   {JSON.stringify($name, null, 2)}
 email:  {JSON.stringify($email, null, 2)}
 age:    {JSON.stringify($age, null, 2)}
-number: {JSON.stringify($number, null, 2)}
-radio : {JSON.stringify($number, null, 2)}
+number: {JSON.stringify($random, null, 2)}
+radio : {JSON.stringify($radio, null, 2)}
 </pre>
 
 <style>
 	label {
 		display: block;
-	}
-
-	:global(input.validated):valid {
-		border-color: green;
-	}
-
-	:global(input.validated):invalid {
-		border-color: red;
 	}
 </style>
