@@ -49,20 +49,9 @@ export function createForm(...fields: Field[]): Form {
     // prevent default browser validation messages when CSR is enabled
     form.noValidate = true
 
-    function onSubmit(e: SubmitEvent) {
-      // prevent form submit if not valid (make a configurable option?)
-      if (!state.valid) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-
-    form.addEventListener('submit', onSubmit)
-
     return {
       destroy() {
         unsubscribe()
-        form.removeEventListener('submit', onSubmit)
       },
     }
   }
