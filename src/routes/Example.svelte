@@ -17,6 +17,7 @@
 	const random = form.field()
 	const radio = form.field()
 
+	let showForm = true
 	let showEmail = true
 
 	function onSubmit() {
@@ -26,65 +27,74 @@
 	let drone: string
 </script>
 
-<form use:form on:submit|preventDefault={onSubmit}>
-	<label for="name" class="text-sm text-gray-500">Username</label>
-	<input id="name" use:name type="text" placeholder="unique name" required />
-	<div id={$name.id} class="m-1 text-xs text-red-700" hidden={!$name.show}>
-		{#if $name.valueMissing}Name is required{/if}
-		{#if $name.customError}Name not available{/if}
-	</div>
+{#if canToggle}
+	<label class="flex items-center">
+		<input class="mr-2" type="checkbox" bind:checked={showForm} />
+		Show Form
+	</label>
+{/if}
 
-	{#if canToggle}
-		<label class="flex items-center">
-			<input class="mr-2" type="checkbox" bind:checked={showEmail} />
-			Include Email in Form
-		</label>
-	{/if}
-
-	{#if showEmail}
-		<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
-		<input id="email" use:email type="email" placeholder="email address" required />
-		<div id={$email.id} class="m-1 text-xs text-red-700" hidden={!$email.show}>
-			{#if $email.valueMissing}Email address is required{/if}
-			{#if $email.typeMismatch}Not a valid email address{/if}
+{#if showForm}
+	<form use:form on:submit|preventDefault={onSubmit}>
+		<label for="name" class="text-sm text-gray-500">Username</label>
+		<input id="name" use:name type="text" placeholder="unique name" required />
+		<div id={$name.id} class="m-1 text-xs text-red-700" hidden={!$name.show}>
+			{#if $name.valueMissing}Name is required{/if}
+			{#if $name.customError}Name not available{/if}
 		</div>
-	{/if}
 
-	<label for="age" class="mt-2 text-sm text-gray-500">Age</label>
-	<input id="age" use:age type="number" required value="0" min="18" max="65" />
-	<div id={$age.id} class="m-1 text-xs text-red-700" hidden={!$age.show}>
-		{#if $age.valueMissing}You have to tell us your age{/if}
-		{#if $age.rangeUnderflow}You must be at least 18{/if}
-		{#if $age.rangeOverflow}Sorry, no pensioners!{/if}
-		{#if $age.stepMismatch}Whole years only{/if}
-	</div>
+		{#if canToggle}
+			<label class="flex items-center">
+				<input class="mr-2" type="checkbox" bind:checked={showEmail} />
+				Include Email in Form
+			</label>
+		{/if}
 
-	<label for="random" class="mt-2 text-sm text-gray-500">Pick a number from, 1 to 10</label>
-	<input id="random" use:random type="number" required value="0" min="1" max="10" />
-	<div id={$random.id} class="m-1 text-xs text-red-700" hidden={!$random.show}>{$random.message}</div>
+		{#if showEmail}
+			<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
+			<input id="email" use:email type="email" placeholder="email address" required />
+			<div id={$email.id} class="m-1 text-xs text-red-700" hidden={!$email.show}>
+				{#if $email.valueMissing}Email address is required{/if}
+				{#if $email.typeMismatch}Not a valid email address{/if}
+			</div>
+		{/if}
 
-	<fieldset>
-		<legend>Select a maintenance drone:</legend>
+		<label for="age" class="mt-2 text-sm text-gray-500">Age</label>
+		<input id="age" use:age type="number" required value="0" min="18" max="65" />
+		<div id={$age.id} class="m-1 text-xs text-red-700" hidden={!$age.show}>
+			{#if $age.valueMissing}You have to tell us your age{/if}
+			{#if $age.rangeUnderflow}You must be at least 18{/if}
+			{#if $age.rangeOverflow}Sorry, no pensioners!{/if}
+			{#if $age.stepMismatch}Whole years only{/if}
+		</div>
 
-		<label class="flex items-center">
-			<input use:radio type="radio" name="drone" value="huey" required bind:group={drone} />
-			Huey
-		</label>
+		<label for="random" class="mt-2 text-sm text-gray-500">Pick a number from, 1 to 10</label>
+		<input id="random" use:random type="number" required value="0" min="1" max="10" />
+		<div id={$random.id} class="m-1 text-xs text-red-700" hidden={!$random.show}>{$random.message}</div>
 
-		<label class="flex items-center">
-			<input use:radio type="radio" name="drone" value="dewey" required bind:group={drone} />
-			Dewey
-		</label>
+		<fieldset>
+			<legend>Select a maintenance drone:</legend>
 
-		<label class="flex items-center">
-			<input use:radio type="radio" name="drone" value="louie" required bind:group={drone} />
-			Louie
-		</label>
-	</fieldset>
-	<div id={$radio.id} class="m-1 text-xs text-red-700" hidden={!$radio.show}>{$radio.message}</div>
+			<label class="flex items-center">
+				<input use:radio type="radio" name="drone" value="huey" required bind:group={drone} />
+				Huey
+			</label>
 
-	<button type="submit" class="block my-3 text-white bg-green-800 py-2 px-4 rounded disabled:bg-gray-400" disabled={!$form.valid}> Submit </button>
-</form>
+			<label class="flex items-center">
+				<input use:radio type="radio" name="drone" value="dewey" required bind:group={drone} />
+				Dewey
+			</label>
+
+			<label class="flex items-center">
+				<input use:radio type="radio" name="drone" value="louie" required bind:group={drone} />
+				Louie
+			</label>
+		</fieldset>
+		<div id={$radio.id} class="m-1 text-xs text-red-700" hidden={!$radio.show}>{$radio.message}</div>
+
+		<button type="submit" class="block my-3 text-white bg-green-800 py-2 px-4 rounded disabled:bg-gray-400" disabled={!$form.valid}> Submit </button>
+	</form>
+{/if}
 
 <pre class="text-xs mt-4">
 form:   {JSON.stringify($form, null, 2)}

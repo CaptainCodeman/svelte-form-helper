@@ -26,7 +26,7 @@ export function createForm(): Form {
   const { subscribe, set } = writable({ dirty: false, touched: false, valid: true })
 
   let fields: Field[] = []
-  let unsubscribe: Unsubscriber
+  let unsubscribe: Unsubscriber | undefined
 
   // This is a little funky, what it does is create a derived store to aggregate
   // the field validation, and subscribe to it to update the form store and set
@@ -50,9 +50,13 @@ export function createForm(): Form {
     // prevent default browser validation messages when CSR is enabled
     form.noValidate = true
 
+    // ensure aggregator is running (if form has been unmounted and remounted)
+    unsubscribe = createAggregator(fields, unsubscribe)
+
     return {
       destroy() {
-        unsubscribe()
+        unsubscribe && unsubscribe()
+        unsubscribe = undefined
       },
     }
   }
