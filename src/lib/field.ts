@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store'
 import type { Readable } from 'svelte/store'
 import type { Action } from 'svelte/action'
+import type { Form } from './form'
 
 type Mutable<Type> = {
   -readonly [Key in keyof Type]: Type[Key]
@@ -42,12 +43,13 @@ export interface FieldOptions {
 // Field store & use:action
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
-export function createField(options?: FieldOptions): Field {
+export function createField(options?: FieldOptions, form?: Form): Field {
   const id = newID()
   const { onDirty, validator } = { onDirty: true, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
 
   const action = (input: HTMLInputElement) => {
+    form && form.add(field)
     let globalNonce: Object
 
     async function checkValidity(touched = false, dirty = false) {
@@ -110,13 +112,16 @@ export function createField(options?: FieldOptions): Field {
 
     return {
       destroy() {
+        form && form.del(field)
         input.removeEventListener('blur', onBlur)
         input.removeEventListener('input', onInput)
       },
     }
   }
 
-  return Object.assign(action, { subscribe })
+  const field = Object.assign(action, { subscribe })
+
+  return field
 }
 
 function validityToObject(validity: ValidityState) {

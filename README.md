@@ -96,7 +96,7 @@ A form aggregates the state of the fields - a form is valid if all the fields ar
 const form = createForm(email, age, name, random)
 ```
 
-Or alternatively, create the form and use the `.field()` method on it to create each field. This avoids the potential issue of the form fields you create and use getting out of sync with the fields you pass to the form.
+Or alternatively, create the form and use the `.field()` method on it to add a new field. This avoids the potential issue of the form fields you create and use getting out of sync with the fields you pass to the form.
 
 ```ts
 const form = createForm()

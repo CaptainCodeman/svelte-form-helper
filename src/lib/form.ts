@@ -1,5 +1,5 @@
 import { derived, writable } from 'svelte/store'
-import type { Readable } from 'svelte/store'
+import type { Readable, Unsubscriber } from 'svelte/store'
 import type { Action } from 'svelte/action'
 import { createField } from './field'
 import type { Field, FieldOptions } from './field'
@@ -14,20 +14,24 @@ export interface FormState {
 
 export interface Form extends Readable<FormState>, Action<HTMLFormElement> {
   field(options?: FieldOptions): Field
+  add(field: Field): void
+  del(field: Field): void
 }
 
 export function createForm(...fields: Field[]): Form {
   // default state (this would be used for SSR, so the form can be submitted)
   let state: FormState = { dirty: false, touched: false, valid: true }
   const { subscribe, set } = writable(state)
+  let unsubscribe = createAggregator(fields)
 
-  const action = (form: HTMLFormElement) => {
-    // prevent default browser validation messages when CSR is enabled
-    form.noValidate = true
+  // This is a little funky, what it does is create a derived store to aggregate
+  // the field validation, and subscribe to it to update the form store and set
+  // the state to use in onSubmit. Because we need to re-create it anytime a
+  // field is added or removed we let the unsubscriber be passed back in and called
+  function createAggregator(fields: Field[], unsubscribe?: Unsubscriber) {
+    unsubscribe && unsubscribe()
 
     // derived store aggregates form state from all the fields
-    // TODO: we _could_ use a Set to ensure fields are all unique (they haven't used the
-    // field method AND passed them into createForm), but the results should be identical
     const { subscribe } = derived(fields, $fields => {
       const valid = $fields.every(x => x.valid)
       const dirty = $fields.some(x => x.dirty)
@@ -35,11 +39,12 @@ export function createForm(...fields: Field[]): Form {
       return { dirty, touched, valid }
     })
 
-    // pass that state on to the form store and keep a copy for use in onSubmit
-    const unsub = subscribe(s => {
-      state = s
-      set(state)
-    })
+    return subscribe(s => set(state = s))
+  }
+
+  const action = (form: HTMLFormElement) => {
+    // prevent default browser validation messages when CSR is enabled
+    form.noValidate = true
 
     function onSubmit(e: SubmitEvent) {
       // prevent form submit if not valid (make a configurable option?)
@@ -53,17 +58,30 @@ export function createForm(...fields: Field[]): Form {
 
     return {
       destroy() {
-        unsub()
+        unsubscribe()
         form.removeEventListener('submit', onSubmit)
       },
     }
   }
 
   const field = (options?: FieldOptions) => {
-    const field = createField(options)
-    fields.push(field)
+    const field = createField(options, form)
+    add(field)
     return field
   }
 
-  return Object.assign(action, { subscribe, field })
+  const add = (field: Field) => {
+    if (fields.includes(field)) return
+    fields.push(field)
+    unsubscribe = createAggregator(fields, unsubscribe)
+  }
+
+  const del = (field: Field) => {
+    fields = fields.filter(f => f !== field)
+    unsubscribe = createAggregator(fields, unsubscribe)
+  }
+
+  const form = Object.assign(action, { subscribe, field, add, del })
+
+  return form
 }
