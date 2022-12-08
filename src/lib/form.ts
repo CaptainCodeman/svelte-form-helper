@@ -59,7 +59,6 @@ export function createForm(): Form {
 
   const field = (options?: FieldOptions) => {
     const field = createField(form, options)
-    add(field)
     return field
   }
 
