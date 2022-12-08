@@ -1,129 +1,147 @@
 # Svelte Form Helper
 
-Lightweight () helpers for form validation with Svelte
+Lightweight helper for form validation with Svelte
 
-1.56 KB minified, 776 bytes gzipped (compression level 6)
+1.64 KB minified, 839 bytes gzipped (compression level 6)
 
-Alternative package name: `itsy-bitsy-teenie-weenie-svelte-form-validate-machiney`
+## Features
 
-## Goals
-
-- Small size
-- Use standard form and input validation wherever possible for compatibility with no-JS / pending-JS
-- Progressively enhance normal forms, but allow easier acces to validation state and more control over styling & messaging
-- Mostly to set valid / invalid styles and decide which messages to show and when
-- SSR compatible
+- ✅ Tiny size (it could have been called `itsy-bitsy-teenie-weenie-svelte-form-validate-machiney`)
+- ✅ Progressive enhancement of standard form validation
+- ✅ Support SSR only forms (without JS enabled, or if JS fails)
+- ✅ Easy acces to validation state and control over styling & messaging when JS enabled
+- ✅ Support dynamic addition / removal of form fields
+- ✅ Aggregate individual field into form-level state
+- ✅ Add appropriate WIA-ARIA accessibility attributes for screen readers
 
 ## Usage
 
-First import the factory functions (you can use field validation without a form, for one-off inputs that don't need to be submitted):
+The important thing to remember is that we're not trying to _replace_ or _re-implement_ the browser native form validation, so you won't find JS versions of `required` or `minlength` - we build on top of what the browser provides to enhance it. So it's worth being familiar with the [validation attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation) available.
+
+We also use the native browser [`ValidityState` model](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) to determine if and why validation failed and use those flags to determine what validation messages to show.
+
+### Install from NPM
+
+Install using your package manager of choice, e.g.:
+
+    npm install svelte-form-helper
+    pnpm i svelte-form-helper
+    yarn add svelte-form-helper
+
+### Create Form Instance
+
+First import the `createForm` factory function in your component `<script>` block and create a form instance from it:
 
 ```ts
-import { createField, createForm } from 'svelte-form-helper'
+import { createForm } from 'svelte-form-helper'
+
+const form = createForm()
 ```
 
-### Fields
+### Create Field Instance(s)
 
-Create a field instance:
+Fields are created using the form instance `.field()` method. An options object can be passed to set a custom `validation` function and whether to perform validation on `input` events or just on `blur` (`onDirty` flag, default is true).
 
 ```ts
-const email = createField()
+const name = form.field({ validator: isNameAvailable })
+const email = form.field({ onDirty: false })
 ```
 
-Options can be passed to define a custom validation (which can be async, and should return a message if invalid or null if valied) and whether to perform validation on input or not (`onDirty`, default true). Validation doesn't run on initial render to prevent failed messages appearing before any user interaction.
+### Custom Validation Function
+
+The custom validation function will be called if the field is otherwise valid (i.e. it won't be called if the input is set to `required` but is empty or hasn't met a required input length). It should accept a string value parameter and return a message if validation fails or else `null` if the value was valid. The validation function can be async to call a remote endpoint - if the input changes before the previous validation completed, the last one called will always win.
 
 ```ts
-// is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
 async function isNameAvailable(value: string) {
-	await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500))
-	const valid = value.length > 5
-	return valid ? null : `Name '${value}' not available`
+	const resp = await fetch('/checkname?name=' + value)
+	return resp.status === 200 ? null : `Name not available`
 }
-
-const name = createField({ validator: isNameAvailable })
 ```
 
-The field instance is applied to an HTML Input Element as a `use:action` (it adds some WIA-ARIA handling):
+### Apply to HTMLFormElement
+
+The `form` instance is a Svelte `use:action` directive so adding it to the `<form>` tag in the Svelte template associates it with the actual `HTMLFormElement` that is created in the browser:
 
 ```svelte
-<input use:name type="text" placeholder="unique name" required />
+<form use:form on:submit={onSubmit}>
 ```
 
-The field instance is also a store and provides access to the validation information. Note the ID - this links the message to the input using the `aria-describedby` attribute:
+On the client the form action will set the `noValidate` property of the form to disable the native browser validation messages and provide us full control to provide and style our own. If JS is not available for any reason, the native browser validation will still be enabled.
+
+### Access Form State
+
+The `form` instance is _also_ a Svelte Readable Store and provides flags to indicate if the form is:
+
+- `dirty` (any field has been input)
+- `touched` (the user has clicked on or tabbed to any field)
+- `valid` (all the fields are valid)
+
+The typical use for the state is to enable or disable the form submit button (which can also be reflected in its style to provide feedback to the user). Remember to use the `$` prefix to access the store value itself:
 
 ```svelte
-<div id={$name.id} class="m-1 text-xs text-red-700" hidden={!$name.show}>
+<button type="submit" disabled={!$form.valid}>Submit</button>
+```
+
+### Apply to HTMLInputElement(s)
+
+The individual field instances are also Svelte `use:action` directives and should be added to the corresponding `<input>` tags in the template to associate them with the actual `HTMLInputElement`s in the browser:
+
+```svelte
+<input use:name type="text" placeholder="unique name" required minlength="5" maxlength="50"/>
+
+<input use:email type="email" placeholder="email address" required />
+```
+
+### Access Field State
+
+The individual field instances are _also_ Svelte Readable Stores and provide easy access to the validation state of their associated `HTMLInputElement`. This can be used to decide what validation messages or hints to output. Whether the message should be shown is determined by the `show` flag.
+
+This snippet will output the default validation message that the browser generates but allows control over where it is shown and how it is styled. Note the `id` being set on the message element - this allows the message to be linked to the `HTMLInputElement` by setting the appropriate `aria-invalid` and `aria-describedby` attributes on it (this happens automatically):
+
+```svelte
+{#if $name.show}
+  <div id={$name.id} class="text-red-700">{$name.message}</div>
+{/if}
+```
+
+But we also have access to the [`ValidityState` flags](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) so we're not limited to the message that the browser generates - we can decide exactly what custom message we want to show for each reason:
+
+```svelte
+{#if $name.show}
+  <div id={$name.id} class="text-red-700">
+    {#if $name.valueMissing}Name is required{/if}
+    {#if $name.tooShort}Name must be at least 5 characters{/if}
+    {#if $name.tooLong}Name can't be longer than 50 characters{/if}
+    {#if $name.customError}Name not available{/if}
+  </div>
+{/if}
+```
+
+NOTE: instead of using the `{#if}` block another approach is to set the `hidden` attribute based on the `show` flag to control whether the validation message is shown:
+
+```svelte
+<div id={$name.id} class="text-red-700" hidden={!$name.show}>
   {#if $name.valueMissing}Name is required{/if}
+  {#if $name.tooShort}Name must be at least 5 characters{/if}
+  {#if $name.tooLong}Name can't be longer than 50 characters{/if}
   {#if $name.customError}Name not available{/if}
 </div>
 ```
 
-The state includes whether the field is valid and the message itself. The minimal use will display the default browser message (this uses am `{#if}` block instead of using a `hidden` attribute):
+### Validation Component Wrappers
 
-```svelte
-{#if $field.show}
-  <div id={$field.id} class="m-1 text-xs text-red-700">{$field.message}</div>
-{/if}
-```
-
-It also has `ValidityState` flags which are [build into the browser](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) and used to decide which message to show:
-
-```svelte
-<input use:age type="number" required value="0" min="18" max="65" />
-<div id={$age.id} class="m-1 text-xs text-red-700" hidden={!$age.show}>
-  {#if $age.valueMissing}You have to tell us your age{/if}
-  {#if $age.rangeUnderflow}You must be at least 18{/if}
-  {#if $age.rangeOverflow}Sorry, no pensioners!{/if}
-  {#if $age.stepMismatch}Whole years only{/if}
-</div>
-```
-
-The use of `{#if}` blocks helps keep the package size down and should be more efficient, but it's also possible to define some Svelte Components to make the outputting easier if preferred (see below for implementation):
+The use of `{#if}` blocks or `hidden` attributes helps keep the package size down and should be more efficient, but it's also possible to define some Svelte Components to make the outputting easier if preferred:
 
 ```svelte
 <input use:email type="email" placeholder="email address" required />
+
 <Validation for={email} class="m-1 text-xs text-red-700">
   <Hint valueMissing>Email address is required</Hint>
   <Hint typeMismatch>Not a valid email address</Hint>
 </Validation>
 ```
 
-### Forms
-
-A form aggregates the state of the fields - a form is valid if all the fields are valid _and_ have been touched (by default, the ). Pass the fields into the function when creating the form instance:
-
-```ts
-const form = createForm(email, age, name, random)
-```
-
-Or alternatively, create the form and use the `.field()` method on it to add a new field. This avoids the potential issue of the form fields you create and use getting out of sync with the fields you pass to the form.
-
-```ts
-const form = createForm()
-
-const name = form.field({ validator: isNameAvailable })
-const email = form.field()
-```
-
-Just like the fields, the form instance is applied to the HTML Form Element as a `use:action`
-
-```svelte
-<form use:form on:submit|preventDefault={onSubmit}>
-```
-
-The stats is accessed as a store to enable / disable submit buttons:
-
-```svelte
-<button type="submit" class="block my-3 text-white bg-green-800 py-2 px-4 rounded disabled:bg-gray-400" disabled={!$form.valid}>
-  Submit
-</button>
-```
-
-## Example Validation Components
-
-The implementation for the validation component syntax shown earlier is below:
-
-### Validation.svelte
+#### Validation.svelte
 
 The simplest message display just needs to reference the field:
 
@@ -159,12 +177,13 @@ The simplest message display just needs to reference the field:
 {/if}
 ```
 
-### Hint.svelte
+#### Hint.svelte
 
 For separate validation messages per reason, nest one or more `<Hint>` components within a `<Validation>` component:
 
 ```svelte
 <input use:email type="email" placeholder="email address" required />
+
 <Validation for={email} class="m-1 text-xs text-red-700">
   <Hint valueMissing>Email address is required</Hint>
   <Hint typeMismatch>Not a valid email address</Hint>
