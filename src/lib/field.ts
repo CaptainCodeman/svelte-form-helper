@@ -2,23 +2,16 @@ import { writable } from 'svelte/store'
 import type { Readable } from 'svelte/store'
 import type { Action } from 'svelte/action'
 
-export interface FieldState {
+type Mutable<Type> = {
+  -readonly [Key in keyof Type]: Type[Key]
+}
+
+export interface FieldState extends Mutable<ValidityState> {
   id: string
   dirty: boolean
   touched: boolean
   show: boolean
   message: string
-  badInput: boolean
-  customError: boolean
-  patternMismatch: boolean
-  rangeOverflow: boolean
-  rangeUnderflow: boolean
-  stepMismatch: boolean
-  tooLong: boolean
-  tooShort: boolean
-  typeMismatch: boolean
-  valid: boolean
-  valueMissing: boolean
 }
 
 const defaultFieldState = {
@@ -85,8 +78,6 @@ export function createField(options?: FieldOptions): Field {
         input.setAttribute('aria-describedby', id)
       }
 
-      const { validity, validationMessage } = input
-
       update(x => {
         dirty = x.dirty || dirty
         touched = x.touched || touched
@@ -94,19 +85,9 @@ export function createField(options?: FieldOptions): Field {
           id,
           dirty,
           touched,
-          show: touched && !validity.valid,
-          message: validationMessage,
-          badInput: validity.badInput,
-          customError: validity.customError,
-          patternMismatch: validity.patternMismatch,
-          rangeOverflow: validity.rangeOverflow,
-          rangeUnderflow: validity.rangeUnderflow,
-          stepMismatch: validity.stepMismatch,
-          tooLong: validity.tooLong,
-          tooShort: validity.tooShort,
-          typeMismatch: validity.typeMismatch,
-          valid: validity.valid,
-          valueMissing: validity.valueMissing,
+          show: touched && !input.validity.valid,
+          message: input.validationMessage,
+          ...validityToObject(input.validity),
         }
       })
     }
@@ -136,6 +117,14 @@ export function createField(options?: FieldOptions): Field {
   }
 
   return Object.assign(action, { subscribe })
+}
+
+function validityToObject(validity: ValidityState) {
+  const result = {} as Mutable<ValidityState>
+  for (const key in validity) {
+    result[key as keyof ValidityState] = validity[key as keyof ValidityState]
+  }
+  return result
 }
 
 let id = 0

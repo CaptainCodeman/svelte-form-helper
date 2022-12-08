@@ -2,7 +2,7 @@
 
 Lightweight () helpers for form validation with Svelte
 
-1.77 KB minified, 816 bytes gzipped (compression level 6)
+1.56 KB minified, 776 bytes gzipped (compression level 6)
 
 Alternative package name: `itsy-bitsy-teenie-weenie-svelte-form-validate-machiney`
 
