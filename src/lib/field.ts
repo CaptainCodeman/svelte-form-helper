@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 import type { Readable } from 'svelte/store'
 import type { Action } from 'svelte/action'
-import type { Form } from './form'
+import type { FormInternal } from './form'
 
 type Mutable<Type> = {
   -readonly [Key in keyof Type]: Type[Key]
@@ -43,7 +43,7 @@ export interface FieldOptions {
 // Field store & use:action
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
-export function createField(options?: FieldOptions, form?: Form): Field {
+export function createField(options?: FieldOptions, form?: FormInternal): Field {
   const id = newID()
   const { onDirty, validator } = { onDirty: true, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })

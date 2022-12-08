@@ -14,6 +14,9 @@ export interface FormState {
 
 export interface Form extends Readable<FormState>, Action<HTMLFormElement> {
   field(options?: FieldOptions): Field
+}
+
+export interface FormInternal extends Form {
   add(field: Field): void
   del(field: Field): void
 }
@@ -81,7 +84,7 @@ export function createForm(...fields: Field[]): Form {
     unsubscribe = createAggregator(fields, unsubscribe)
   }
 
-  const form = Object.assign(action, { subscribe, field, add, del })
+  const form: FormInternal = Object.assign(action, { subscribe, field, add, del })
 
   return form
 }
