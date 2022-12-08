@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createField, createForm } from '$lib'
+	import { createForm } from '$lib'
 
 	// is valid if > 5 characters, otherwise invalid, with random 0.5 - 1.5 second delay
 	async function isNameAvailable(value: string) {
@@ -8,14 +8,14 @@
 		return valid ? null : `Name '${value}' not available`
 	}
 
-	const email = createField()
-	const age = createField()
-	const name = createField({ validator: isNameAvailable, onDirty: true })
-	const random = createField()
-	const radio = createField({ onDirty: true })
+	const form = createForm()
+	const email = form.field()
+	const age = form.field()
+	const name = form.field({ validator: isNameAvailable })
+	const random = form.field()
+	const radio = form.field()
 
-	// TODO: try to remove the need to populate the form with the fields by keeping track as they are added to the DOM
-	const form = createForm(email, age, name, random, radio)
+	let showEmail = true
 
 	function onSubmit() {
 		// whatever
@@ -32,12 +32,18 @@
 		{#if $name.customError}Name not available{/if}
 	</div>
 
-	<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
-	<input id="email" use:email type="email" placeholder="email address" required />
-	<div id={$email.id} class="m-1 text-xs text-red-700" hidden={!$email.show}>
-		{#if $email.valueMissing}Email address is required{/if}
-		{#if $email.typeMismatch}Not a valid email address{/if}
-	</div>
+	<label class="flex items-center">
+		<input class="mr-2" type="checkbox" bind:checked={showEmail} />
+		Include Email in Form
+	</label>
+	{#if showEmail}
+		<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
+		<input id="email" use:email type="email" placeholder="email address" required />
+		<div id={$email.id} class="m-1 text-xs text-red-700" hidden={!$email.show}>
+			{#if $email.valueMissing}Email address is required{/if}
+			{#if $email.typeMismatch}Not a valid email address{/if}
+		</div>
+	{/if}
 
 	<label for="age" class="mt-2 text-sm text-gray-500">Age</label>
 	<input id="age" use:age type="number" required value="0" min="18" max="65" />
