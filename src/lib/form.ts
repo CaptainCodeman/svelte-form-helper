@@ -2,7 +2,7 @@ import { derived, writable } from 'svelte/store'
 import type { Readable, Unsubscriber } from 'svelte/store'
 import type { Action } from 'svelte/action'
 import { createField } from './field'
-import type { Field, FieldOptions } from './field'
+import type { Field, FieldOptions, FieldInternal } from './field'
 
 export interface FormState {
   dirty: boolean
@@ -85,6 +85,8 @@ export function createForm(...fields: Field[]): Form {
   }
 
   const form: FormInternal = Object.assign(action, { subscribe, field, add, del })
+
+  fields.forEach(f => (f as FieldInternal).form = form)
 
   return form
 }

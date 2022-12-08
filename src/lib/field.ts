@@ -43,13 +43,17 @@ export interface FieldOptions {
 // Field store & use:action
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
+export interface FieldInternal extends Field {
+  form?: FormInternal
+}
+
 export function createField(options?: FieldOptions, form?: FormInternal): Field {
   const id = newID()
   const { onDirty, validator } = { onDirty: true, ...options }
   const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
 
   const action = (input: HTMLInputElement) => {
-    form && form.add(field)
+    field.form && field.form.add(field)
     let globalNonce: Object
 
     async function checkValidity(touched = false, dirty = false) {
@@ -112,14 +116,14 @@ export function createField(options?: FieldOptions, form?: FormInternal): Field 
 
     return {
       destroy() {
-        form && form.del(field)
+        field.form && field.form.del(field)
         input.removeEventListener('blur', onBlur)
         input.removeEventListener('input', onInput)
       },
     }
   }
 
-  const field = Object.assign(action, { subscribe })
+  const field = Object.assign(action, { subscribe, form })
 
   return field
 }
