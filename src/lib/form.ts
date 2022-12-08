@@ -2,7 +2,7 @@ import { derived, writable } from 'svelte/store'
 import type { Readable, Unsubscriber } from 'svelte/store'
 import type { Action } from 'svelte/action'
 import { createField } from './field'
-import type { Field, FieldOptions, FieldInternal } from './field'
+import type { Field, FieldOptions } from './field'
 
 export interface FormState {
   dirty: boolean
@@ -21,11 +21,12 @@ export interface FormInternal extends Form {
   del(field: Field): void
 }
 
-export function createForm(...fields: Field[]): Form {
+export function createForm(): Form {
   // default state (this would be used for SSR, so the form can be submitted)
-  let state: FormState = { dirty: false, touched: false, valid: true }
-  const { subscribe, set } = writable(state)
-  let unsubscribe = createAggregator(fields)
+  const { subscribe, set } = writable({ dirty: false, touched: false, valid: true })
+
+  let fields: Field[] = []
+  let unsubscribe: Unsubscriber
 
   // This is a little funky, what it does is create a derived store to aggregate
   // the field validation, and subscribe to it to update the form store and set
@@ -42,34 +43,22 @@ export function createForm(...fields: Field[]): Form {
       return { dirty, touched, valid }
     })
 
-    return subscribe(s => set(state = s))
+    return subscribe(state => set(state))
   }
 
   const action = (form: HTMLFormElement) => {
     // prevent default browser validation messages when CSR is enabled
     form.noValidate = true
 
-    function onSubmit(e: SubmitEvent) {
-      // prevent form submit if not valid (make a configurable option?)
-      if (!state.valid) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }
-
-    form.addEventListener('submit', onSubmit)
-
     return {
       destroy() {
         unsubscribe()
-        form.removeEventListener('submit', onSubmit)
       },
     }
   }
 
   const field = (options?: FieldOptions) => {
-    const field = createField(options, form)
-    add(field)
+    const field = createField(form, options)
     return field
   }
 
@@ -85,8 +74,6 @@ export function createForm(...fields: Field[]): Form {
   }
 
   const form: FormInternal = Object.assign(action, { subscribe, field, add, del })
-
-  fields.forEach(f => (f as FieldInternal).form = form)
 
   return form
 }
