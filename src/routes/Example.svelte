@@ -109,4 +109,12 @@ radio : {JSON.stringify($radio, null, 2)}
 	label {
 		display: block;
 	}
+
+	:global(input.touched:valid) {
+		border-color: green;
+	}
+
+	:global(input.touched:invalid) {
+		border-color: red;
+	}
 </style>
