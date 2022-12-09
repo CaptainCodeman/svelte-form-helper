@@ -35,18 +35,23 @@ const defaultFieldState = {
 
 export type Validator = (value: string) => Promise<string | null>
 
-export interface FieldOptions {
+export interface FieldOptionsInternal {
+  onDirty: boolean
+  onTouched: string
+}
+
+export interface FieldOptions extends FieldOptionsInternal {
   validator?: Validator
-  onDirty?: boolean
 }
 
 // Field store & use:action
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
-export function createField(form: FormInternal, options?: FieldOptions): Field {
+export function createField(form: FormInternal, options: FieldOptions): Field {
   const id = newID()
-  const { onDirty, validator } = { onDirty: true, ...options }
-  const { subscribe, update } = writable<FieldState>({ id, ...defaultFieldState })
+  const { onDirty, onTouched, validator } = options
+  const state = { id, ...defaultFieldState }
+  const { subscribe, set } = writable<FieldState>(state)
 
   const action = (input: HTMLInputElement) => {
     form && form.add(field)
@@ -72,26 +77,28 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
         }
       }
 
-      if (valid) {
-        input.removeAttribute('aria-invalid')
-        input.removeAttribute('aria-describedby')
-      } else {
+      dirty = state.dirty || dirty
+      touched = state.touched || touched
+
+      Object.assign(state, {
+        dirty,
+        touched,
+        show: touched && !input.validity.valid,
+        message: input.validationMessage,
+        ...validityToObject(input.validity),
+      })
+
+      set(state)
+
+      if (state.show) {
         input.setAttribute('aria-invalid', 'true')
         input.setAttribute('aria-describedby', id)
+      } else {
+        input.removeAttribute('aria-invalid')
+        input.removeAttribute('aria-describedby')
       }
 
-      update(x => {
-        dirty = x.dirty || dirty
-        touched = x.touched || touched
-        return {
-          id,
-          dirty,
-          touched,
-          show: touched && !input.validity.valid,
-          message: input.validationMessage,
-          ...validityToObject(input.validity),
-        }
-      })
+      input.classList.toggle(onTouched, touched)
     }
 
     function onBlur(e: Event) {
