@@ -35,21 +35,17 @@ const defaultFieldState = {
 
 export type Validator = (value: string) => Promise<string | null>
 
-export interface FieldOptionsInternal {
-  onDirty: boolean
-  onTouched: string
-}
-
-export interface FieldOptions extends FieldOptionsInternal {
+export interface FieldOptions {
   validator?: Validator
+  onDirty?: boolean
 }
 
 // Field store & use:action
 export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
 
-export function createField(form: FormInternal, options: FieldOptions): Field {
+export function createField(form: FormInternal, options?: FieldOptions): Field {
   const id = newID()
-  const { onDirty, onTouched, validator } = options
+  const { onDirty, validator } = { onDirty: true, ...options }
   const state = { id, ...defaultFieldState }
   const { subscribe, set } = writable<FieldState>(state)
 
@@ -98,7 +94,11 @@ export function createField(form: FormInternal, options: FieldOptions): Field {
         input.removeAttribute('aria-describedby')
       }
 
-      input.classList.toggle(onTouched, touched)
+      if (touched) {
+        input.setAttribute('data-touched', '')
+      } else {
+        input.removeAttribute('data-touched')
+      }
     }
 
     function onBlur(e: Event) {
