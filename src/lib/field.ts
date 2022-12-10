@@ -54,7 +54,7 @@ export function createField(form: FormInternal, options: FieldOptions): Field {
   const { subscribe, set } = writable<FieldState>(state)
 
   const action = (input: HTMLInputElement) => {
-    form && form.add(field)
+    form.add(field)
     let globalNonce: Object
 
     async function checkValidity(touched = false, dirty = false) {
@@ -119,14 +119,14 @@ export function createField(form: FormInternal, options: FieldOptions): Field {
 
     return {
       destroy() {
-        form && form.del(field)
+        form.del(field)
         input.removeEventListener('blur', onBlur)
         input.removeEventListener('input', onInput)
       },
     }
   }
 
-  const field = Object.assign(action, { subscribe, form })
+  const field = Object.assign(action, { subscribe })
 
   return field
 }
