@@ -2,7 +2,7 @@
 
 Lightweight helper for form validation with Svelte
 
-1.72 KB minified, 870 bytes gzipped (compression level 6)
+1.73 KB minified, 860 bytes gzipped (compression level 6)
 
 ## Features
 
