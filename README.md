@@ -35,7 +35,7 @@ Install using your package manager of choice, e.g.:
 
 ### Create Form Instance
 
-First import the `createForm` factory function in your component `<script>` block and create a form instance from it:
+First import the `createForm` factory function in your component `<script>` block and create a form validator instance from it:
 
 ```ts
 import { createForm } from 'svelte-form-helper'
@@ -47,23 +47,23 @@ const form = createForm()
 
 Fields are created using the form instance `.field()` method. An options object can be passed to set:
 
-- `onDirty` - a boolean of whether to validate the input on `input` event vs just `blur` (default true)
+- `onDirty` - a boolean flag of whether to validate the input on `input` event vs just `blur` (default true)
 - `validator` - a custom validator function
 
 ```ts
-const name = form.field({ validator: isNameAvailable })
+const name = form.field({ validator: isNameAvailable, onDirty: false })
 const email = form.field({ onDirty: false })
 const title = form.field()
 ```
 
 ### Custom Validation Function
 
-The custom validation function will be called if the field is otherwise valid (i.e. it won't be called if the input is set to `required` but is empty or hasn't met a required input length). It should accept a string value parameter and return a message if validation fails or else `null` if the value was valid. The validation function can be async to call a remote endpoint - if the input changes before the previous validation completed, the last one called will always win.
+The custom validation function will be called if the field is otherwise valid (i.e. it won't be called if the input is set to `required` but is empty or hasn't yet met a required input length). It should accept a string value parameter and return a message if validation fails or else `null` if the value was valid. The validation function can be async to call a remote endpoint - if the input changes before the previous validation completed, the last one called will always win.
 
 ```ts
 async function isNameAvailable(value: string) {
-	const resp = await fetch('/checkname?name=' + value)
-	return resp.status === 200 ? null : `Name not available`
+  const resp = await fetch('/checkname?name=' + value)
+  return resp.status === 200 ? null : `Name not available`
 }
 ```
 
@@ -91,6 +91,8 @@ The typical use for the state is to enable or disable the form submit button (wh
 <button type="submit" disabled={!$form.valid}>Submit</button>
 ```
 
+This flag can also be used to prevent form submission in any `on:submit` event handler.
+
 ### Apply to HTMLInputElement(s)
 
 The individual field instances are also Svelte `use:action` directives and should be added to the corresponding `<input>` tags in the template to associate them with the actual `HTMLInputElement`s in the browser:
@@ -107,29 +109,31 @@ A `data-touched` attribute will be added to each input element when touched whic
 
 #### Svelte Style
 
-A velte stye needs to be made global to prvent it being removed:
+A Svelte style based on the `data-touched` attribute needs to be made global to prevent it being removed:
 
 <style global>
-	input[data-touched]:valid {
-		border-color: green;
-	}
+  input[data-touched]:valid {
+    color: green;
+    border-color: green;
+  }
 
-	input[data-touched]:invalid {
-		border-color: red;
-	}
+  input[data-touched]:invalid {
+    color: red;
+    border-color: red;
+  }
 </style>
 
 #### TailwindCSS
 
-If using TailwindCSS the styles can be added directly to the input element. e.g. to make the text and border red or green:
+If using TailwindCSS the styles can be added directly to the input element. e.g. to make the text and border red or green based on the state:
 
 ```html
 <input
-	use:email
-	type="email"
-	placeholder="email address"
-	required
-	class="
+  use:email
+  type="email"
+  placeholder="email address"
+  required
+  class="
     data-[touched]:valid:text-green-700
     data-[touched]:valid:border-green-700
     data-[touched]:invalid:text-red-700
@@ -156,11 +160,11 @@ The previous classes applied to the input element can then be simplified to:
 
 ```html
 <input
-	use:email
-	type="email"
-	placeholder="email address"
-	required
-	class="
+  use:email
+  type="email"
+  placeholder="email address"
+  required
+  class="
     touched:valid:text-green-700
     touched:valid:border-green-700
     touched:invalid:text-red-700
