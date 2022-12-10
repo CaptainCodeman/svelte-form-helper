@@ -13,6 +13,11 @@ Lightweight helper for form validation with Svelte
 - ✅ Support dynamic addition / removal of form fields
 - ✅ Aggregate individual field into form-level state
 - ✅ Add appropriate WIA-ARIA accessibility attributes for screen readers
+- ✅ Works great with [SvelteKit Form actions](https://kit.svelte.dev/docs/form-actions)
+
+## Example
+
+Online example coming soon, in the meantime checkout the [Basic Example](https://github.com/CaptainCodeman/svelte-form-helper/blob/master/src/routes/Example.svelte) or the [Component Example](https://github.com/CaptainCodeman/svelte-form-helper/blob/master/src/routes/ExampleHelpers.svelte)
 
 ## Usage
 
