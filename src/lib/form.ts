@@ -2,7 +2,7 @@ import { derived, writable } from 'svelte/store'
 import type { Readable, Unsubscriber } from 'svelte/store'
 import type { Action } from 'svelte/action'
 import { createField } from './field'
-import type { Field, FieldOptions, FieldOptionsInternal } from './field'
+import type { Field, FieldOptions } from './field'
 
 export interface FormState {
   dirty: boolean
@@ -21,9 +21,7 @@ export interface FormInternal extends Form {
   del(field: Field): void
 }
 
-export interface FormOptions extends Partial<FieldOptionsInternal> { }
-
-export function createForm(formOptions?: FormOptions): Form {
+export function createForm(): Form {
   // default state (this would be used for SSR, so the form can be submitted)
   const { subscribe, set } = writable({ dirty: false, touched: false, valid: true })
 
@@ -63,8 +61,8 @@ export function createForm(formOptions?: FormOptions): Form {
     }
   }
 
-  const field = (fieldOptions?: Partial<FieldOptionsInternal>) => {
-    const field = createField(form, { onDirty: true, onTouched: 'touched', ...formOptions, ...fieldOptions })
+  const field = (fieldOptions?: FieldOptions) => {
+    const field = createField(form, fieldOptions)
     return field
   }
 

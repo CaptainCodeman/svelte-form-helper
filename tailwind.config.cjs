@@ -1,13 +1,19 @@
-const forms = require("@tailwindcss/forms");
+const forms = require('@tailwindcss/forms')
+const plugin = require('tailwindcss/plugin')
 
 const config = {
-  content: ["./src/**/*.{html,js,svelte,ts}"],
+	content: ['./src/**/*.{html,js,svelte,ts}'],
 
-  theme: {
-    extend: {},
-  },
+	theme: {
+		extend: {},
+	},
 
-  plugins: [forms],
-};
+	plugins: [
+		forms,
+		plugin(({ addVariant }) => {
+			addVariant('touched', '&[data-touched]')
+		}),
+	],
+}
 
-module.exports = config;
+module.exports = config

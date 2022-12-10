@@ -2,7 +2,7 @@
 
 Lightweight helper for form validation with Svelte
 
-1.72 KB minified, 870 bytes gzipped (compression level 6)
+1.73 KB minified, 860 bytes gzipped (compression level 6)
 
 ## Features
 
@@ -43,22 +43,12 @@ import { createForm } from 'svelte-form-helper'
 const form = createForm()
 ```
 
-`createForm` also accepts an optional object which can contain:
-
-- `onDirty` - a boolean of whether to validate fields on `input` event vs just `blur` (default true)
-- `onTouched` - a string that is a class name that will be added to every touched input (default 'touched')
-
-These options become the defaults that will be applied to all fields, but can be overridden on a per-field basis if required.
-
-```ts
-import { createForm } from 'svelte-form-helper'
-
-const form = createForm({ onDirty: false })
-```
-
 ### Create Field Instance(s)
 
-Fields are created using the form instance `.field()` method. An options object can be passed to override the `onDirty` and `onTouched` options inherited from the form (if required) and to also set a custom `validation` function for the field.
+Fields are created using the form instance `.field()` method. An options object can be passed to set:
+
+- `onDirty` - a boolean of whether to validate the input on `input` event vs just `blur` (default true)
+- `validator` - a custom validator function
 
 ```ts
 const name = form.field({ validator: isNameAvailable })
@@ -111,19 +101,77 @@ The individual field instances are also Svelte `use:action` directives and shoul
 <input use:email type="email" placeholder="email address" required />
 ```
 
-The `onTouched` class name will be added to each input when touched which can be used to style the input itself. You could apply a green or red border to indicate an inputs valid or invalid state. Note the reason for the additional class is that the styles would otherwise be applied to untouched inputs which is not a great user experience.
+### CSS `:valid` & `:invalid` Input Styling
 
-<style>
-	:global(input.touched:valid) {
+A `data-touched` attribute will be added to each input element when touched which can be used to style the input itself. You could apply a green or red border to indicate its valid or invalid state. Note the reason for not using the `:valid` and `:invalid` CSS pseudo classes along is that the styles would otherwise be applied to untouched inputs which is not a great user experience.
+
+#### Svelte Style
+
+A velte stye needs to be made global to prvent it being removed:
+
+<style global>
+	input[data-touched]:valid {
 		border-color: green;
 	}
 
-	:global(input.touched:invalid) {
+	input[data-touched]:invalid {
 		border-color: red;
 	}
 </style>
 
+#### TailwindCSS
+
+If using TailwindCSS the styles can be added directly to the input element. e.g. to make the text and border red or green:
+
+```html
+<input
+	use:email
+	type="email"
+	placeholder="email address"
+	required
+	class="
+    data-[touched]:valid:text-green-700
+    data-[touched]:valid:border-green-700
+    data-[touched]:invalid:text-red-700
+    data-[touched]:invalid:border-red-700
+  "
+/>
+```
+
+This can be made tidier by adding a custom variant using a TailwindCSS plugin defined in `tailwind.config.cjs`:
+
+```ts
+const plugin = require('tailwindcss/plugin')
+
+// rest of config
+
+plugins: [
+  plugin(({ addVariant }) => {
+    addVariant('touched', '&[data-touched]')
+  }),
+],
+```
+
+The previous classes applied to the input element can then be simplified to:
+
+```html
+<input
+	use:email
+	type="email"
+	placeholder="email address"
+	required
+	class="
+    touched:valid:text-green-700
+    touched:valid:border-green-700
+    touched:invalid:text-red-700
+    touched:invalid:border-red-700
+  "
+/>
+```
+
 ### Access Field State
+
+Enough about styling the input elements themselves, what about adding additonal validation messages and hints?
 
 The individual field instances are _also_ Svelte Readable Stores and provide easy access to the validation state of their associated `HTMLInputElement`. This can be used to decide what validation messages or hints to output. Whether the message should be shown is determined by the `show` flag.
 

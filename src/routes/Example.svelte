@@ -37,7 +37,14 @@
 {#if showForm}
 	<form use:form on:submit|preventDefault={onSubmit}>
 		<label for="name" class="text-sm text-gray-500">Username</label>
-		<input id="name" use:name type="text" placeholder="unique name" required />
+		<input
+			id="name"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:name
+			type="text"
+			placeholder="unique name"
+			required
+		/>
 		<div id={$name.id} class="m-1 text-xs text-red-700" hidden={!$name.show}>
 			{#if $name.valueMissing}Name is required{/if}
 			{#if $name.customError}Name not available{/if}
@@ -52,7 +59,14 @@
 
 		{#if showEmail}
 			<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
-			<input id="email" use:email type="email" placeholder="email address" required />
+			<input
+				id="email"
+				class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+				use:email
+				type="email"
+				placeholder="email address"
+				required
+			/>
 			<div id={$email.id} class="m-1 text-xs text-red-700" hidden={!$email.show}>
 				{#if $email.valueMissing}Email address is required{/if}
 				{#if $email.typeMismatch}Not a valid email address{/if}
@@ -60,7 +74,16 @@
 		{/if}
 
 		<label for="age" class="mt-2 text-sm text-gray-500">Age</label>
-		<input id="age" use:age type="number" required value="0" min="18" max="65" />
+		<input
+			id="age"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:age
+			type="number"
+			required
+			value="0"
+			min="18"
+			max="65"
+		/>
 		<div id={$age.id} class="m-1 text-xs text-red-700" hidden={!$age.show}>
 			{#if $age.valueMissing}You have to tell us your age{/if}
 			{#if $age.rangeUnderflow}You must be at least 18{/if}
@@ -69,7 +92,16 @@
 		</div>
 
 		<label for="random" class="mt-2 text-sm text-gray-500">Pick a number from, 1 to 10</label>
-		<input id="random" use:random type="number" required value="0" min="1" max="10" />
+		<input
+			id="random"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:random
+			type="number"
+			required
+			value="0"
+			min="1"
+			max="10"
+		/>
 		<div id={$random.id} class="m-1 text-xs text-red-700" hidden={!$random.show}>{$random.message}</div>
 
 		<fieldset>

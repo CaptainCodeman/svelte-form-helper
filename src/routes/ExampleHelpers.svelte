@@ -39,7 +39,14 @@
 {#if showForm}
 	<form use:form on:submit|preventDefault={onSubmit}>
 		<label for="name" class="text-sm text-gray-500">Username</label>
-		<input id="name" use:name type="text" placeholder="unique name" required />
+		<input
+			id="name"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:name
+			type="text"
+			placeholder="unique name"
+			required
+		/>
 		<Validation for={name} class="m-1 text-xs text-red-700">
 			<Hint valueMissing>Name is required</Hint>
 			<Hint customError>Name not available</Hint>
@@ -54,7 +61,14 @@
 
 		{#if showEmail}
 			<label for="email" class="mt-2 text-sm text-gray-500">Email</label>
-			<input id="email" use:email type="email" placeholder="email address" required />
+			<input
+				id="email"
+				class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+				use:email
+				type="email"
+				placeholder="email address"
+				required
+			/>
 			<Validation for={email} class="m-1 text-xs text-red-700">
 				<Hint valueMissing>Email address is required</Hint>
 				<Hint typeMismatch>Not a valid email address</Hint>
@@ -62,7 +76,16 @@
 		{/if}
 
 		<label for="age" class="mt-2 text-sm text-gray-500">Age</label>
-		<input id="age" use:age type="number" required value="0" min="18" max="65" />
+		<input
+			id="age"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:age
+			type="number"
+			required
+			value="0"
+			min="18"
+			max="65"
+		/>
 		<Validation for={age} class="m-1 text-xs text-red-700">
 			<Hint valueMissing>You have to tell us your age</Hint>
 			<Hint rangeUnderflow>You must be at least 18</Hint>
@@ -71,7 +94,16 @@
 		</Validation>
 
 		<label for="random" class="mt-2 text-sm text-gray-500">Pick a number from, 1 to 10</label>
-		<input id="random" use:random type="number" required value="0" min="1" max="10" />
+		<input
+			id="random"
+			class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700"
+			use:random
+			type="number"
+			required
+			value="0"
+			min="1"
+			max="10"
+		/>
 		<Validation for={random} class="m-1 text-xs text-red-700" />
 
 		<fieldset>
