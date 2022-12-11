@@ -19,7 +19,7 @@
 </script>
 
 <h1 class="font-bold text-gray-700 text-3xl tracking-tighter">svelte-form-helper</h1>
-<p class="mt-2 text-gray-700">Example form to show functionality</p>
+<p class="mt-2 text-gray-700">Example form to show functionality:</p>
 
 <h2 class="font-bold text-gray-500 text-xl tracking-tighter mt-6">Registration Form</h2>
 
