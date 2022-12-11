@@ -31,13 +31,14 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "tsup",
+    "build:docs": "vite build",
+    "build:lib": "tsup",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "prepare": "npm run build"
+    "prepare": "npm run build:lib"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/adapter-static": "next",
     "@sveltejs/kit": "next",
     "@tailwindcss/forms": "^0.5.3",
     "autoprefixer": "^10.4.13",
