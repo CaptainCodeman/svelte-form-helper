@@ -64,7 +64,10 @@
 			<input id="email" type="email" name="email" class={inputClass} placeholder="you@example.com" required use:email />
 			<TouchedIcon field={email} />
 		</div>
-		<p id={$email.id} class="mt-2 text-sm text-red-600" hidden={!$email.show}>{$email.message}</p>
+		<Validation for={email} class="mt-2 text-sm text-red-600">
+			<Hint valueMissing>Email is required</Hint>
+			<Hint typeMismatch>Has to be a valid email format</Hint>
+		</Validation>
 	</div>
 
 	{#if showDebug}
@@ -74,17 +77,34 @@
 	<div class="mt-4">
 		<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
 		<div class="relative mt-1 rounded-md shadow-sm w-64">
-			<input id="password" type="password" name="password" class={inputClass} required minlength="8" maxlength="64" use:password />
+			<input
+				id="password"
+				type="password"
+				name="password"
+				class={inputClass}
+				required
+				minlength="8"
+				maxlength="64"
+				pattern={'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$'}
+				use:password
+			/>
 			<TouchedIcon field={password} />
 		</div>
-		<p id={$password.id} class="mt-2 text-sm text-red-600" hidden={!$password.show}>{$password.message}</p>
+		<Validation for={password} class="mt-2 text-sm text-red-600">
+			<Hint valueMissing>Password is required</Hint>
+			<Hint tooShort>Password has to be at least 8 characters</Hint>
+			<Hint tooLong>Password cannot be more than 64 characters</Hint>
+			<Hint patternMismatch>Must contain at least one uppercase, lowercase, and number</Hint>
+		</Validation>
 	</div>
 
 	{#if showDebug}
 		<pre class="mt-2 text-xs">{JSON.stringify($password, null, 2)}</pre>
 	{/if}
 
-	<button class="fadeIn mt-4 text-white bg-green-800 disabled:bg-gray-400 px-4 py-2 rounded" type="submit" disabled={!$form.valid}>Register</button>
+	<button class="fadeIn mt-4 text-white bg-green-800 disabled:bg-gray-400 px-4 py-2 rounded opacity-0" type="submit" disabled={!$form.valid}
+		>Register</button
+	>
 
 	{#if showDebug}
 		<pre class="mt-2 text-xs">{JSON.stringify($form, null, 2)}</pre>
@@ -92,4 +112,22 @@
 </form>
 
 <style>
+	/*
+	because we want to ensure the form submit is enabled bu default,
+	so it will work without JS, the button will render green before
+	being disabled when JS is active. To prevent this, we set it to
+	fade in using CSS so it is less jarring.
+	*/
+	@keyframes fadeIn {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+
+	button {
+		animation: 250ms ease-in 250ms 1 normal forwards fadeIn;
+	}
 </style>
