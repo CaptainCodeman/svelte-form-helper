@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/svelte-form-helper/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		<meta http-equiv="content-security-policy" content="">
+		<link href="/svelte-form-helper/_app/immutable/assets/_layout-08639fa6.css" rel="stylesheet">
+		<link href="/svelte-form-helper/_app/immutable/assets/_page-f507f4e8.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">
+
+
+<main class="p-4"><h1>SSR Only Form (no CSR / JS)</h1>
+<p>Uses native browser validation and form submit is enabled (no JS to enable it)</p>
+
+
+
+<form><label for="name" class="text-sm text-gray-500 svelte-1xryyy0">Username</label>
+		<input id="name" class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700" type="text" placeholder="unique name" required>
+		<div id="form-help:13" class="m-1 text-xs text-red-700" hidden>
+			</div>
+
+		
+
+		<label for="email" class="mt-2 text-sm text-gray-500 svelte-1xryyy0">Email</label>
+			<input id="email" class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700" type="email" placeholder="email address" required>
+			<div id="form-help:11" class="m-1 text-xs text-red-700" hidden>
+				</div>
+
+		<label for="age" class="mt-2 text-sm text-gray-500 svelte-1xryyy0">Age</label>
+		<input id="age" class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700" type="number" required value="0" min="18" max="65">
+		<div id="form-help:12" class="m-1 text-xs text-red-700" hidden>
+			
+			
+			</div>
+
+		<label for="random" class="mt-2 text-sm text-gray-500 svelte-1xryyy0">Pick a number from, 1 to 10</label>
+		<input id="random" class="touched:valid:text-green-700 touched:valid:border-green-700 touched:invalid:text-red-700 touched:invalid:border-red-700" type="number" required value="0" min="1" max="10">
+		<div id="form-help:14" class="m-1 text-xs text-red-700" hidden></div>
+
+		<fieldset><legend>Select a maintenance drone:</legend>
+
+			<label class="flex items-center svelte-1xryyy0"><input type="radio" name="drone" value="huey" required>
+				Huey
+			</label>
+
+			<label class="flex items-center svelte-1xryyy0"><input type="radio" name="drone" value="dewey" required>
+				Dewey
+			</label>
+
+			<label class="flex items-center svelte-1xryyy0"><input type="radio" name="drone" value="louie" required>
+				Louie
+			</label></fieldset>
+		<div id="form-help:15" class="m-1 text-xs text-red-700" hidden></div>
+
+		<button type="submit" class="block my-3 text-white bg-green-800 py-2 px-4 rounded disabled:bg-gray-400" >Submit </button></form>
+
+<pre class="text-xs mt-4">form:   {
+  "dirty": false,
+  "touched": false,
+  "valid": true
+}
+name:   {
+  "id": "form-help:13",
+  "dirty": false,
+  "touched": false,
+  "show": false,
+  "message": "",
+  "badInput": false,
+  "customError": false,
+  "patternMismatch": false,
+  "rangeOverflow": false,
+  "rangeUnderflow": false,
+  "stepMismatch": false,
+  "tooLong": false,
+  "tooShort": false,
+  "typeMismatch": false,
+  "valid": true,
+  "valueMissing": false
+}
+email:  {
+  "id": "form-help:11",
+  "dirty": false,
+  "touched": false,
+  "show": false,
+  "message": "",
+  "badInput": false,
+  "customError": false,
+  "patternMismatch": false,
+  "rangeOverflow": false,
+  "rangeUnderflow": false,
+  "stepMismatch": false,
+  "tooLong": false,
+  "tooShort": false,
+  "typeMismatch": false,
+  "valid": true,
+  "valueMissing": false
+}
+age:    {
+  "id": "form-help:12",
+  "dirty": false,
+  "touched": false,
+  "show": false,
+  "message": "",
+  "badInput": false,
+  "customError": false,
+  "patternMismatch": false,
+  "rangeOverflow": false,
+  "rangeUnderflow": false,
+  "stepMismatch": false,
+  "tooLong": false,
+  "tooShort": false,
+  "typeMismatch": false,
+  "valid": true,
+  "valueMissing": false
+}
+number: {
+  "id": "form-help:14",
+  "dirty": false,
+  "touched": false,
+  "show": false,
+  "message": "",
+  "badInput": false,
+  "customError": false,
+  "patternMismatch": false,
+  "rangeOverflow": false,
+  "rangeUnderflow": false,
+  "stepMismatch": false,
+  "tooLong": false,
+  "tooShort": false,
+  "typeMismatch": false,
+  "valid": true,
+  "valueMissing": false
+}
+radio : {
+  "id": "form-help:15",
+  "dirty": false,
+  "touched": false,
+  "show": false,
+  "message": "",
+  "badInput": false,
+  "customError": false,
+  "patternMismatch": false,
+  "rangeOverflow": false,
+  "rangeUnderflow": false,
+  "stepMismatch": false,
+  "tooLong": false,
+  "tooShort": false,
+  "typeMismatch": false,
+  "valid": true,
+  "valueMissing": false
+}
+</pre></main>
+
+</div>
+	</body>
+</html>
