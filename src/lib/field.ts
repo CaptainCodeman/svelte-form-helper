@@ -33,7 +33,9 @@ const defaultFieldState = {
   valueMissing: false,
 }
 
-export type Validator = (value: string) => Promise<string | null>
+type MaybePromise<T> = T | Promise<T>
+
+export type Validator = (value: string) => MaybePromise<string | null>
 
 export interface FieldOptions {
   validator?: Validator
