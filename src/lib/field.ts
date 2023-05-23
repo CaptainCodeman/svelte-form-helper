@@ -94,17 +94,12 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
 
       set(state)
 
-      setAttribute(input, 'data-show', state.show)
-      setAttribute(input, 'data-dirty', state.dirty)
-      setAttribute(input, 'data-touched', state.touched)
+      setAttribute(input, state.show, 'data-show')
+      setAttribute(input, state.dirty, 'data-dirty')
+      setAttribute(input, state.touched, 'data-touched')
 
-      if (state.show) {
-        input.setAttribute('aria-invalid', 'true')
-        input.setAttribute('aria-describedby', id)
-      } else {
-        input.removeAttribute('aria-invalid')
-        input.removeAttribute('aria-describedby')
-      }
+      setAttribute(input, state.show, 'aria-invalid', 'true')
+      setAttribute(input, state.show, 'aria-describedby', id)
     }
 
     function onBlur(_e: Event) {
@@ -146,9 +141,9 @@ function validityToObject(validity: ValidityState) {
 let id = 0
 const newID = () => `form-help:${++id}`
 
-const setAttribute = (input: InputElement, name: string, flag: boolean) => {
+const setAttribute = (input: InputElement, flag: boolean, name: string, value: string = '') => {
   if (flag) {
-    input.setAttribute(name, '')
+    input.setAttribute(name, value)
   } else {
     input.removeAttribute(name)
   }
