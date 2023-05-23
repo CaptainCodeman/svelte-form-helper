@@ -59,10 +59,10 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
       // used to ignore potentially still pending async custom validation checks
       const localNonce = globalNonce = new Object()
 
-      // execute inbuild validity checks
+      // execute inbuilt validity checks
       let valid = input.checkValidity()
 
-      // if valid, and a custom validator defined, execute that
+      // if valid, and a custom validator is defined, execute it
       if (valid && validator) {
         const message = await validator(input.value)
 
@@ -103,11 +103,11 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
       }
     }
 
-    function onBlur(e: Event) {
+    function onBlur(_e: Event) {
       checkValidity(true, false)
     }
 
-    function onInput(e: Event) {
+    function onInput(_e: Event) {
       input.setCustomValidity('')
       if (onDirty) {
         checkValidity(true, true)

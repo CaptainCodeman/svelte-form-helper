@@ -213,7 +213,9 @@
 	{/if}
 </form>
 
-<HighlightSvelte class="mt-8 text-sm" {code} />
+<div class="mt-8 text-sm">
+	<HighlightSvelte {code} />
+</div>
 
 <style>
 	/*
