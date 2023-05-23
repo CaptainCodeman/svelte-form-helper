@@ -39,23 +39,22 @@
     "prepare": "npm run build:lib"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "1.0.0",
-    "@sveltejs/kit": "1.0.0",
+    "@sveltejs/adapter-static": "^2.0.2",
+    "@sveltejs/kit": "^1.18.0",
     "@tailwindcss/forms": "^0.5.3",
-    "autoprefixer": "^10.4.13",
-    "postcss": "^8.4.20",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.23",
     "postcss-load-config": "^4.0.1",
-    "svelte": "^3.55.0",
-    "svelte-check": "^2.10.2",
-    "svelte-highlight": "^6.2.1",
-    "svelte-preprocess": "^5.0.0",
-    "tailwindcss": "^3.2.4",
-    "tslib": "^2.4.1",
-    "tsup": "^6.5.0",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.1"
+    "svelte": "^3.59.1",
+    "svelte-check": "^3.3.2",
+    "svelte-highlight": "^7.3.0",
+    "tailwindcss": "^3.3.2",
+    "tslib": "^2.5.2",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.8"
   },
   "dependencies": {
-    "highlight.js": "^11.7.0"
+    "highlight.js": "^11.8.0"
   }
 }
