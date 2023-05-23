@@ -7,6 +7,13 @@ type Mutable<Type> = {
   -readonly [Key in keyof Type]: Type[Key]
 }
 
+type InputElement = HTMLButtonElement
+                  | HTMLFieldSetElement
+                  | HTMLInputElement
+                  | HTMLOutputElement
+                  | HTMLSelectElement
+                  | HTMLTextAreaElement
+
 export interface FieldState extends Mutable<ValidityState> {
   id: string
   dirty: boolean
@@ -29,7 +36,7 @@ const defaultFieldState = {
   tooLong: false,
   tooShort: false,
   typeMismatch: false,
-  valid: true,
+  valid: false,
   valueMissing: false,
 }
 
@@ -40,22 +47,23 @@ export type Validator = (value: string) => MaybePromise<string | null>
 export interface FieldOptions {
   validator?: Validator
   onDirty?: boolean
+  onTouched?: boolean
 }
 
 // Field store & use:action
-export interface Field extends Readable<FieldState>, Action<HTMLInputElement> { }
+export interface Field extends Readable<FieldState>, Action<InputElement> { }
 
 export function createField(form: FormInternal, options?: FieldOptions): Field {
   const id = newID()
-  const { onDirty, validator } = { onDirty: true, ...options }
+  const { onDirty, onTouched, validator } = { onDirty: false, onTouched: true, ...options }
   const state = { id, ...defaultFieldState }
   const { subscribe, set } = writable<FieldState>(state)
 
-  const action = (input: HTMLInputElement) => {
+  const action = (input: InputElement) => {
     form.add(field)
     let globalNonce: Object
 
-    async function checkValidity(touched = false, dirty = false) {
+    async function checkValidity(setTouched = false, setDirty = false) {
       // used to ignore potentially still pending async custom validation checks
       const localNonce = globalNonce = new Object()
 
@@ -63,7 +71,7 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
       let valid = input.checkValidity()
 
       // if valid, and a custom validator is defined, execute it
-      if (valid && validator) {
+      if (valid && validator && !(input instanceof HTMLFieldSetElement)) {
         const message = await validator(input.value)
 
         // but if we're no longer the latest after the await, abort
@@ -75,18 +83,20 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
         }
       }
 
-      dirty = state.dirty || dirty
-      touched = state.touched || touched
+      state.dirty = state.dirty || setDirty
+      state.touched = state.touched || setTouched
+      state.show = !input.validity.valid && ((onDirty && state.dirty) || (onTouched && state.touched))
 
       Object.assign(state, {
-        dirty,
-        touched,
-        show: touched && !input.validity.valid,
         message: input.validationMessage,
         ...validityToObject(input.validity),
       })
 
       set(state)
+
+      setAttribute(input, 'data-show', state.show)
+      setAttribute(input, 'data-dirty', state.dirty)
+      setAttribute(input, 'data-touched', state.touched)
 
       if (state.show) {
         input.setAttribute('aria-invalid', 'true')
@@ -94,12 +104,6 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
       } else {
         input.removeAttribute('aria-invalid')
         input.removeAttribute('aria-describedby')
-      }
-
-      if (touched) {
-        input.setAttribute('data-touched', '')
-      } else {
-        input.removeAttribute('data-touched')
       }
     }
 
@@ -109,9 +113,7 @@ export function createField(form: FormInternal, options?: FieldOptions): Field {
 
     function onInput(_e: Event) {
       input.setCustomValidity('')
-      if (onDirty) {
-        checkValidity(true, true)
-      }
+      checkValidity(false, true)
     }
 
     checkValidity()
@@ -143,3 +145,11 @@ function validityToObject(validity: ValidityState) {
 
 let id = 0
 const newID = () => `form-help:${++id}`
+
+const setAttribute = (input: InputElement, name: string, flag: boolean) => {
+  if (flag) {
+    input.setAttribute(name, '')
+  } else {
+    input.removeAttribute(name)
+  }
+}

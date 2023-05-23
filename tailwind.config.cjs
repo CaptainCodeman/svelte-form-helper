@@ -11,6 +11,8 @@ const config = {
 	plugins: [
 		forms,
 		plugin(({ addVariant }) => {
+			addVariant('validated', '&[data-dirty][data-touched]')
+			addVariant('dirty', '&[data-dirty]')
 			addVariant('touched', '&[data-touched]')
 		}),
 	],
