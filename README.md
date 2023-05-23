@@ -2,18 +2,19 @@
 
 Lightweight helper for form validation with Svelte
 
-1.73 KB minified, 860 bytes gzipped (compression level 6)
+1.79 KB minified, 919 bytes gzipped (compression level 6)
 
 ## Features
 
 - ✅ Tiny size (it could have been called `itsy-bitsy-teenie-weenie-svelte-form-validate-machiney`)
 - ✅ Progressive enhancement of standard form validation
-- ✅ Support SSR only forms (without JS enabled, or if JS fails)
-- ✅ Easy acces to validation state and control over styling & messaging when JS enabled
+- ✅ Supports SSR only forms (with JS disabled, or if JS fails to load)
+- ✅ Easy acces to validation state and control over messaging & styling when JS is enabled
 - ✅ Support dynamic addition / removal of form fields
 - ✅ Aggregate individual field into form-level state
 - ✅ Add appropriate WIA-ARIA accessibility attributes for screen readers
 - ✅ Works great with [SvelteKit Form actions](https://kit.svelte.dev/docs/form-actions)
+- ✅ Supports all [HTMLElements that implement The Constraint Validation API](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#the_constraint_validation_api)
 
 ## Example
 
@@ -21,7 +22,7 @@ Online example coming soon, in the meantime checkout the [Basic Example](https:/
 
 ## Usage
 
-The important thing to remember is that we're not trying to _replace_ or _re-implement_ the browser native form validation, so you won't find JS versions of `required` or `minlength` - we build on top of what the browser provides to enhance it. So it's worth being familiar with the [validation attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation) available.
+The important thing to remember is that we're not trying to _replace_ or _re-implement_ the browser native form validation, so you won't find JS versions of `required` or `minlength` - we build on top of what the browser already provides, to enhance it. So it's worth being familiar with the [validation attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Constraint_validation) available.
 
 We also use the native browser [`ValidityState` model](https://developer.mozilla.org/en-US/docs/Web/API/ValidityState) to determine if and why validation failed and use those flags to determine what validation messages to show.
 
@@ -47,14 +48,17 @@ const form = createForm()
 
 Fields are created using the form instance `.field()` method. An options object can be passed to set:
 
-- `onDirty` - a boolean flag of whether to validate the input on `input` event vs just `blur` (default true)
+- `onDirty` - a boolean flag of whether to show validation errors on `input` (default `false`)
+- `onTouched` - a boolean flag of whether to show validation errors on `blur` (default `true`)
 - `validator` - a custom validator function
 
 ```ts
-const name = form.field({ validator: isNameAvailable, onDirty: false })
-const email = form.field({ onDirty: false })
+const name = form.field({ validator: isNameAvailable, onDirty: true })
+const email = form.field({ onDirty: true })
 const title = form.field()
 ```
+
+NOTE: The field is _always_ validated on `input` and `blur` (i.e. when dirty or touched) so the form validation state is always known and uptodate. This creates a better user experience as the form submit button will be enabled as soon as the form is valid, rather than requiring the user to tab out of the field first.
 
 ### Custom Validation Function
 
@@ -66,6 +70,8 @@ async function isNameAvailable(value: string) {
   return resp.status === 200 ? null : `Name not available`
 }
 ```
+
+NOTE: It will be ignored if used with a `HTMLFieldSetElement` (which represents a `<fieldset>` element) as this lacks a `value` property.
 
 ### Apply to HTMLFormElement
 
@@ -81,9 +87,9 @@ On the client the form action will set the `noValidate` property of the form to 
 
 The `form` instance is _also_ a Svelte Readable Store and provides flags to indicate if the form is:
 
-- `dirty` (any field has been input)
-- `touched` (the user has clicked on or tabbed to any field)
-- `valid` (all the fields are valid)
+- `dirty` (_any_ field has been input)
+- `touched` (the user has clicked on or tabbed to _any_ field)
+- `valid` (_all_ of the fields attached to the form are valid)
 
 The typical use for the state is to enable or disable the form submit button (which can also be reflected in its style to provide feedback to the user). Remember to use the `$` prefix to access the store value itself:
 
@@ -105,7 +111,7 @@ The individual field instances are also Svelte `use:action` directives and shoul
 
 ### CSS `:valid` & `:invalid` Input Styling
 
-A `data-touched` attribute will be added to each input element when touched which can be used to style the input itself. You could apply a green or red border to indicate its valid or invalid state. Note the reason for not using the `:valid` and `:invalid` CSS pseudo classes along is that the styles would otherwise be applied to untouched inputs which is not a great user experience.
+The current field state is reflected to the HTML Element with `data-show`, `data-dirty` and `data-touched` attributes which can be used to style the input itself. You could apply a green or red border to indicate its valid or invalid state only when touched for instance. Note the reason for not using the `:valid` and `:invalid` CSS pseudo classes alone is that the styles would otherwise be applied to inputs on page load which is not a great user experience.
 
 #### Svelte Style
 
