@@ -1,69 +1,69 @@
 {
-  "name": "svelte-form-helper",
-  "version": "0.4.0",
-  "type": "module",
-  "keywords": [
-    "svelte",
-    "form",
-    "forms",
-    "validation",
-    "valid",
-    "submit",
-    "state"
-  ],
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "svelte": "./dist/index.js"
-    }
-  },
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "homepage": "https://captaincodeman.github.io/svelte-form-helper/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/captaincodeman/svelte-form-helper.git"
-  },
-  "author": {
-    "name": "Simon Green",
-    "email": "simon@captaincodeman.com",
-    "url": "https://www.captaincodeman.com/"
-  },
-  "license": "MIT",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "package": "tsup && publint",
-    "prepublishOnly": "npm run package",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
-  },
-  "peerDependencies": {
-    "svelte": "^3.54.0 || ^4.0.0"
-  },
-  "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.0",
-    "@sveltejs/kit": "^2.0.0",
-    "@sveltejs/vite-plugin-svelte": "^3.0.0",
-    "@tailwindcss/forms": "^0.5.3",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24",
-    "postcss-load-config": "^4.0.1",
-    "publint": "^0.1.12",
-    "svelte": "^4.0.0",
-    "svelte-check": "^3.4.4",
-    "svelte-highlight": "^7.3.0",
-    "tailwindcss": "^3.3.2",
-    "tslib": "^2.5.3",
-    "tsup": "^7.0.0",
-    "typescript": "^5.1.3",
-    "vite": "^5.0.0"
-  },
-  "dependencies": {
-    "highlight.js": "^11.8.0"
-  }
+	"name": "svelte-form-helper",
+	"version": "0.4.1",
+	"type": "module",
+	"keywords": [
+		"svelte",
+		"form",
+		"forms",
+		"validation",
+		"valid",
+		"submit",
+		"state"
+	],
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"svelte": "./dist/index.js"
+		}
+	},
+	"module": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"homepage": "https://captaincodeman.github.io/svelte-form-helper/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/captaincodeman/svelte-form-helper.git"
+	},
+	"author": {
+		"name": "Simon Green",
+		"email": "simon@captaincodeman.com",
+		"url": "https://www.captaincodeman.com/"
+	},
+	"license": "MIT",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"package": "tsup && publint",
+		"prepublishOnly": "npm run package",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"peerDependencies": {
+		"svelte": "^3.54.0 || ^4.0.0 || ^5.0.0"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-static": "^3.0.1",
+		"@sveltejs/kit": "^2.5.7",
+		"@sveltejs/vite-plugin-svelte": "^3.1.0",
+		"@tailwindcss/forms": "^0.5.7",
+		"autoprefixer": "^10.4.19",
+		"postcss": "^8.4.38",
+		"postcss-load-config": "^5.0.3",
+		"publint": "^0.2.7",
+		"svelte": "^4.2.15",
+		"svelte-check": "^3.7.0",
+		"svelte-highlight": "^7.6.0",
+		"tailwindcss": "^3.4.3",
+		"tslib": "^2.6.2",
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.5",
+		"vite": "^5.2.10"
+	},
+	"dependencies": {
+		"highlight.js": "^11.9.0"
+	}
 }
